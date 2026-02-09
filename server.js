@@ -1,46 +1,30 @@
-server,js
-
 const express = require("express");
-const dotenv = require("dotenv");
-const connectDB = require("./config/db");
 const cors = require("cors");
+const dotenv = require("dotenv");
 
-// ----------------------------------------------------------------------------------------------
+const connectDB = require("./config/db");
+const UserModel = require("./models/user");
 
-dotenv.config({ quiet: true });
+dotenv.config();
 connectDB();
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
-// ----------------------------------------------------------------------------------------------
-
-const User = require('./models/User');
-const Complaint = require('./models/Complaint');
-
-// ----------------------------------------------------------------------------------------------
-
-app.get("/", (req, res) => {
-	res.send("Complaint Tracking API Running");
+/* ✅ GET ALL USERS (VEHICLES DATA) */
+app.get("/api/users", async (req, res) => {
+  try {
+    const users = await UserModel.find();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () =>
-	console.log(`Server running on port ${PORT}`)
+  console.log(`Server running on port ${PORT}`)
 );
-
-// ----------------------------------------------------------------------------------------------
-
-// Fetch user to show in user management page
-
-app.get("/api/users", async (req, res) => {
-	try {
-		const users = await User.find().select("-password");
-		res.json(users);
-	} catch (err) {
-		res.status(500).json({ message: "Server Error" });
-	}
-});
-
-// ----------------------------------------------------------------------------------------------
