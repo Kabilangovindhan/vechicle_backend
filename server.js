@@ -93,3 +93,59 @@ app.put("/api/vehicle/:id", async (req, res) => {
 });
 
 // ------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+// ============================================================
+// USER APIs
+// ============================================================
+
+// Get all users
+app.get("/api/user", async (req, res) => {
+	try {
+		const users = await UserModel.find().sort({ createdAt: -1 });
+		res.json(users);
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+});
+
+
+// Create new user
+app.post("/api/user", async (req, res) => {
+	try {
+		const newUser = await UserModel.create(req.body);
+		res.json(newUser);
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: err.message });
+	}
+});
+
+
+// Update user
+app.put("/api/user/:id", async (req, res) => {
+	try {
+		const updatedUser = await UserModel.findByIdAndUpdate(
+			req.params.id,
+			req.body,
+			{ new: true }
+		);
+		res.json(updatedUser);
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+});
+
+
+// Delete user
+app.delete("/api/user/:id", async (req, res) => {
+	try {
+		await UserModel.findByIdAndDelete(req.params.id);
+		res.json({ message: "User Deleted Successfully" });
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: err.message });
+	}
+});
