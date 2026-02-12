@@ -12,7 +12,7 @@ const VehicleModel = require("./models/vehicle");
 
 // ------------------------------------------------------------------------------------------------------------------------
 
-dotenv.config();
+dotenv.config({ quiet: true });
 connectDB();
 
 // ------------------------------------------------------------------------------------------------------------------------
@@ -32,7 +32,7 @@ app.listen(PORT, () =>
 
 // ------------------------------------------------------------------------------------------------------------------------
 
-// Get vehicle
+// Get vehicle for Vechile Master
 
 app.get("/api/vehicle", async (req, res) => {
 
@@ -46,7 +46,7 @@ app.get("/api/vehicle", async (req, res) => {
 
 // ------------------------------------------------------------------------------------------------------------------------
 
-// Delete a user
+// Delete vehicle for Vechile Master
 
 app.delete("/api/vehicle/:id", async (req, res) => {
 
@@ -63,7 +63,7 @@ app.delete("/api/vehicle/:id", async (req, res) => {
 
 // ------------------------------------------------------------------------------------------------------------------------
 
-// Create a new user
+// Create vehicle for Vechile Master
 
 app.post("/api/vehicle", async (req, res) => {
 
@@ -78,7 +78,7 @@ app.post("/api/vehicle", async (req, res) => {
 
 // ------------------------------------------------------------------------------------------------------------------------
 
-// Update a user
+// Update vehicle for Vechile Master
 
 app.put("/api/vehicle/:id", async (req, res) => {
 
@@ -96,14 +96,8 @@ app.put("/api/vehicle/:id", async (req, res) => {
 
 // ------------------------------------------------------------------------------------------------------------------------
 
+// Get all users for User Management
 
-
-
-// ============================================================
-// USER APIs
-// ============================================================
-
-// Get all users
 app.get("/api/user", async (req, res) => {
 	try {
 		const users = await UserModel.find().sort({ createdAt: -1 });
@@ -113,8 +107,10 @@ app.get("/api/user", async (req, res) => {
 	}
 });
 
+// ------------------------------------------------------------------------------------------------------------------------
 
-// Create new user
+// Create users for User Management
+
 app.post("/api/user", async (req, res) => {
 	try {
 		const newUser = await UserModel.create(req.body);
@@ -125,8 +121,10 @@ app.post("/api/user", async (req, res) => {
 	}
 });
 
+// ------------------------------------------------------------------------------------------------------------------------
 
-// Update user
+// Update users for User Management
+
 app.put("/api/user/:id", async (req, res) => {
 	try {
 		const updatedUser = await UserModel.findByIdAndUpdate(
@@ -140,8 +138,10 @@ app.put("/api/user/:id", async (req, res) => {
 	}
 });
 
+// ------------------------------------------------------------------------------------------------------------------------
 
-// Delete user
+// Delete users for User Management
+
 app.delete("/api/user/:id", async (req, res) => {
 	try {
 		await UserModel.findByIdAndDelete(req.params.id);
@@ -152,21 +152,16 @@ app.delete("/api/user/:id", async (req, res) => {
 	}
 });
 
+// ------------------------------------------------------------------------------------------------------------------------
 
-
-
-// ============================================================
-// CUSTOMER REGISTER (SAVE REGISTER PAGE DATA TO DB)
-// ============================================================
+// Register User from Login Menu
 
 app.post("/api/customer/register", async (req, res) => {
 
 	try {
-		console.log(req.body)
 
 		const { fullName, email, phone, password } = req.body;
 
-		// Check if email already exists
 		const existingUser = await UserModel.findOne({ phone });
 		if (existingUser) {
 			return res.status(400).json({
@@ -174,12 +169,9 @@ app.post("/api/customer/register", async (req, res) => {
 			});
 		}
 
-		// Create new user
 		const newUser = await UserModel.create({
-			name: fullName,   // mapping frontend → db field
-			email,
-			phone,
-			password,
+			name: fullName, email,
+			phone, password,
 			role: "customer"
 		});
 
@@ -202,26 +194,26 @@ app.post("/api/customer/register", async (req, res) => {
 
 });
 
+// ------------------------------------------------------------------------------------------------------------------------
 
-//login//
+// Login User from Login Menu
+
 app.post("/api/customer/login", async (req, res) => {
+
 	try {
 
 		const { phone, password } = req.body;
 
 		const user = await UserModel.findOne({ phone });
 
-		if (!user) {
-			return res.status(400).json({ message: "User not found" });
-		}
+		if (!user) { return res.status(400).json({ message: "User not found" }) }
 
-		const isMatch = password === user.password; // For simplicity, using plain text. In production, use bcrypt to compare hashed passwords.
+		const isMatch = password === user.password;
 
 		if (!isMatch) {
 			return res.status(400).json({ message: "Invalid credentials" });
 		}
 
-		// JWT TOKEN
 		const token = jwt.sign(
 			{
 				id: user._id,
@@ -246,5 +238,4 @@ app.post("/api/customer/login", async (req, res) => {
 	}
 });
 
-
-
+// ------------------------------------------------------------------------------------------------------------------------
