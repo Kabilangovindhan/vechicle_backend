@@ -4,11 +4,9 @@ const sparePartSchema = new mongoose.Schema({
     partName: { type: String, required: true },
     partNumber: String,
     category: String,
-
     price: Number,
     stock: Number,
     minStock: Number,
-
     supplier: String
 }, { timestamps: true });
 

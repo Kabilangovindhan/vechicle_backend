@@ -9,4 +9,4 @@ const userSchema = new mongoose.Schema({
 	role: { type: String, enum: ["admin", "staff", "customer"] }
 }, { timestamps: true });
 
-module.exports = mongoose.model("user", userSchema);
+module.exports = mongoose.model("User", userSchema);
