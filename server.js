@@ -1,7 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const bcrypt = require("bcryptjs");
 const connectDB = require("./config/db");
+const jwt = require("jsonwebtoken");
 
 // ------------------------------------------------------------------------------------------------------------------------
 
@@ -149,3 +151,100 @@ app.delete("/api/user/:id", async (req, res) => {
 		res.status(500).json({ error: err.message });
 	}
 });
+
+
+
+
+// ============================================================
+// CUSTOMER REGISTER (SAVE REGISTER PAGE DATA TO DB)
+// ============================================================
+
+app.post("/api/customer/register", async (req, res) => {
+
+	try {
+		console.log(req.body)
+
+		const { fullName, email, phone, password } = req.body;
+
+		// Check if email already exists
+		const existingUser = await UserModel.findOne({ phone });
+		if (existingUser) {
+			return res.status(400).json({
+				message: "Phone number already registered"
+			});
+		}
+
+		// Create new user
+		const newUser = await UserModel.create({
+			name: fullName,   // mapping frontend → db field
+			email,
+			phone,
+			password,
+			role: "customer"
+		});
+
+		res.json({
+			success: true,
+			message: "Registration Successful",
+			user: newUser
+		});
+
+	} catch (error) {
+
+		console.error(error);
+
+		res.status(500).json({
+			message: "Registration Failed",
+			error: error.message
+		});
+
+	}
+
+});
+
+
+//login//
+app.post("/api/customer/login", async (req, res) => {
+	try {
+
+		const { phone, password } = req.body;
+
+		const user = await UserModel.findOne({ phone });
+
+		if (!user) {
+			return res.status(400).json({ message: "User not found" });
+		}
+
+		const isMatch = password === user.password; // For simplicity, using plain text. In production, use bcrypt to compare hashed passwords.
+
+		if (!isMatch) {
+			return res.status(400).json({ message: "Invalid credentials" });
+		}
+
+		// JWT TOKEN
+		const token = jwt.sign(
+			{
+				id: user._id,
+				phone: user.phone,
+				role: user.role
+			},
+			process.env.JWT_SECRET || "secretkey",
+			{ expiresIn: "1d" }
+		);
+
+		res.json({
+			token,
+			user: {
+				name: user.name,
+				phone: user.phone,
+				role: user.role
+			}
+		});
+
+	} catch (error) {
+		res.status(500).json({ message: "Login Failed" });
+	}
+});
+
+
+
