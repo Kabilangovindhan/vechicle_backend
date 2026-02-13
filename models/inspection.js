@@ -6,5 +6,6 @@ const inspectionSchema = new mongoose.Schema({
     remarks: String,
     beforeImages: [String],
     inspectedBy: { type: mongoose.Schema.Types.ObjectId, ref: "user" }
+}, { timestamps: true });
 
 module.exports = mongoose.model("Inspection", inspectionSchema);

@@ -68,13 +68,12 @@ app.get("/api/vehicle", async (req, res) => {
 	}
 });
 
+// ------------------------------------------------------------------------------------------------------------------------
 
-
-
-
+// Create vehicle for Vechile Master
 
 app.post("/api/vehicle/user", async (req, res) => {
-	console.log(req.body)
+
 	try {
 		const users = await VehicleModel.find({ ownerPhone: req.body.phone });
 		res.json(users);
@@ -139,6 +138,7 @@ app.put("/api/vehicle/:id", async (req, res) => {
 // Get all users for User Management
 
 app.get("/api/user", async (req, res) => {
+	
 	try {
 		const users = await UserModel.find().sort({ createdAt: -1 });
 		res.json(users);
@@ -152,6 +152,7 @@ app.get("/api/user", async (req, res) => {
 // Create users for User Management
 
 app.post("/api/user", async (req, res) => {
+
 	try {
 		const newUser = await UserModel.create(req.body);
 		res.json(newUser);
@@ -166,6 +167,7 @@ app.post("/api/user", async (req, res) => {
 // Update users for User Management
 
 app.put("/api/user/:id", async (req, res) => {
+
 	try {
 		const updatedUser = await UserModel.findByIdAndUpdate(
 			req.params.id,
@@ -183,6 +185,7 @@ app.put("/api/user/:id", async (req, res) => {
 // Delete users for User Management
 
 app.delete("/api/user/:id", async (req, res) => {
+
 	try {
 		await UserModel.findByIdAndDelete(req.params.id);
 		res.json({ message: "User Deleted Successfully" });
