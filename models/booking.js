@@ -9,7 +9,6 @@ const bookingSchema = new mongoose.Schema({
         required: true
     },
     problemDescription: String,
-    problemImages: [String],
     appointmentDate: Date,
     status: {
         type: String,

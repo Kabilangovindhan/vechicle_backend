@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const jobSchema = new mongoose.Schema({
     booking: { type: mongoose.Schema.Types.ObjectId, ref: "Booking" },
-    assignedStaff: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+    assignedStaff: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     priority: { type: String, enum: ["Normal", "Urgent"], default: "Normal" },
     jobStatus: {
         type: String,
