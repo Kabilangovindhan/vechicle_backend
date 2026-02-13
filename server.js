@@ -9,6 +9,30 @@ const jwt = require("jsonwebtoken");
 
 const UserModel = require("./models/user");
 const VehicleModel = require("./models/vehicle");
+const BookingModel = require("./models/booking");
+
+
+
+function verifyToken(req, res, next) {
+
+	const bearerHeader = req.headers["authorization"];
+
+	if (!bearerHeader) {
+		return res.status(401).json({ message: "Access Denied. No Token Provided" });
+	}
+
+	const token = bearerHeader.split(" ")[1];
+
+	jwt.verify(token, "SECRET_KEY", (err, decoded) => {
+		if (err) {
+			return res.status(403).json({ message: "Invalid Token" });
+		}
+
+		req.user = decoded;
+		next();
+	});
+}
+
 
 // ------------------------------------------------------------------------------------------------------------------------
 
@@ -43,6 +67,22 @@ app.get("/api/vehicle", async (req, res) => {
 		res.status(500).json({ message: error.message });
 	}
 });
+
+
+
+
+
+
+app.post("/api/vehicle/user", async (req, res) => {
+	console.log(req.body)
+	try {
+		const users = await VehicleModel.find({ ownerPhone: req.body.phone });
+		res.json(users);
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+});
+
 
 // ------------------------------------------------------------------------------------------------------------------------
 
@@ -94,6 +134,86 @@ app.put("/api/vehicle/:id", async (req, res) => {
 	}
 });
 
+
+
+//booking//
+
+app.post("/api/booking", async (req, res) => {
+    try {
+
+        const user = await UserModel.findOne({
+            phone: req.body.customerPhone
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const booking = await BookingModel.create({
+            customer: user._id,
+            vehicle: req.body.vehicle,
+            serviceType: req.body.serviceType,
+            problemDescription: req.body.problemDescription,
+            appointmentDate: req.body.appointmentDate
+        });
+
+        res.json(booking);
+
+    } catch (err) {
+        console.log("Booking Create Error:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get("/api/booking/customer/:phone", async (req, res) => {
+    try {
+
+        const user = await UserModel.findOne({
+            phone: req.params.phone
+        });
+
+        if (!user) return res.json([]);
+
+        const bookings = await BookingModel
+            .find({ customer: user._id })
+            .populate("vehicle")
+            .sort({ createdAt: -1 });
+
+        res.json(bookings);
+
+    } catch (err) {
+        console.log("Booking Fetch Error:", err);
+        res.status(500).json([]);
+    }
+});
+
+
+
+
+
+exports.createBooking = async (req, res) => {
+    try {
+        const { customerPhone, vehicle, serviceType, appointmentDate, problemDescription } = req.body;
+
+        // Find User _id by phone (e.g., 9000000004 for Arun)
+        const user = await User.findOne({ phone: customerPhone });
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        const newBooking = new Booking({
+            customer: user._id, // References vehicle_db.users ObjectId
+            vehicle: vehicle,   // References vehicle_db.vehicles ObjectId
+            serviceType,
+            appointmentDate,
+            problemDescription,
+            status: "Pending"
+        });
+
+        await newBooking.save();
+        res.status(201).json({ message: "Booking saved to database" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
 // ------------------------------------------------------------------------------------------------------------------------
 
 // Get all users for User Management
