@@ -11,6 +11,9 @@ const UserModel = require("./models/user");
 const VehicleModel = require("./models/vehicle");
 const BookingModel = require("./models/booking");
 const JobModel = require("./models/job");
+const InspectionModel = require("./models/inspection");
+const EstimateModel = require("./models/estimate");
+
 
 
 
@@ -552,5 +555,201 @@ app.get("/api/staff/jobs", verifyToken, async (req, res) => {
 		res.status(500).json({ message: "Fetch jobs failed" });
 
 	}
+
+});
+
+
+app.post("/api/staff/inspection/:jobId", verifyToken, async (req, res) => {
+
+    try {
+
+        const inspection = await InspectionModel.create({
+
+            job: req.params.jobId,
+
+            issues: req.body.issues,
+
+            remarks: req.body.remarks,
+
+            images: req.body.images || [],
+
+            inspectedBy: req.user.id
+
+        });
+
+        // Update job status
+        await JobModel.findByIdAndUpdate(
+            req.params.jobId,
+            { jobStatus: "Inspection" }
+        );
+
+        res.json(inspection);
+
+    } catch (err) {
+
+        res.status(500).json({
+            message: "Inspection failed"
+        });
+
+    }
+
+});
+
+
+app.post("/api/staff/estimate/:jobId", verifyToken, async (req, res) => {
+
+    try {
+
+        const { labourCost, partsCost, tax } = req.body;
+
+        const totalCost =
+            Number(labourCost) +
+            Number(partsCost) +
+            Number(tax);
+
+        const estimate = await EstimateModel.create({
+
+            job: req.params.jobId,
+
+            labourCost,
+            partsCost,
+            tax,
+            totalCost,
+
+            createdBy: req.user.id
+
+        });
+
+        await JobModel.findByIdAndUpdate(
+            req.params.jobId,
+            { jobStatus: "Waiting Approval" }
+        );
+
+        res.json(estimate);
+
+    } catch (err) {
+
+        res.status(500).json({
+            message: "Estimate creation failed"
+        });
+
+    }
+
+});
+
+
+app.get("/api/customer/estimate/:jobId", verifyToken, async (req, res) => {
+
+    try {
+
+        const estimate = await EstimateModel
+            .findOne({ job: req.params.jobId })
+            .populate({
+                path: "job",
+                populate: {
+                    path: "booking",
+                    populate: ["vehicle"]
+                }
+            });
+
+        res.json(estimate);
+
+    } catch (err) {
+
+        res.status(500).json({
+            message: "Fetch estimate failed"
+        });
+
+    }
+
+});
+
+
+app.put("/api/customer/estimate/:id/approve", verifyToken, async (req, res) => {
+
+    try {
+
+        const estimate = await EstimateModel.findByIdAndUpdate(
+            req.params.id,
+            { status: "Approved" },
+            { new: true }
+        );
+
+        await JobModel.findByIdAndUpdate(
+            estimate.job,
+            { jobStatus: "Working" }
+        );
+
+        res.json({
+            message: "Estimate approved"
+        });
+
+    } catch (err) {
+
+        res.status(500).json({
+            message: "Approval failed"
+        });
+
+    }
+
+});
+
+
+app.put("/api/customer/estimate/:id/approve", verifyToken, async (req, res) => {
+
+    try {
+
+        const estimate = await EstimateModel.findByIdAndUpdate(
+            req.params.id,
+            { status: "Approved" },
+            { new: true }
+        );
+
+        await JobModel.findByIdAndUpdate(
+            estimate.job,
+            { jobStatus: "Working" }
+        );
+
+        res.json({
+            message: "Estimate approved"
+        });
+
+    } catch (err) {
+
+        res.status(500).json({
+            message: "Approval failed"
+        });
+
+    }
+
+});
+
+
+app.put("/api/customer/estimate/:id/reject", verifyToken, async (req, res) => {
+
+    try {
+
+        const estimate = await EstimateModel.findByIdAndUpdate(
+            req.params.id,
+            { status: "Rejected" },
+            { new: true }
+        );
+
+        await JobModel.findByIdAndUpdate(
+            estimate.job,
+            { jobStatus: "Rejected" }
+        );
+
+        res.json({
+            message: "Estimate rejected"
+        });
+
+    } catch (err) {
+
+        res.status(500).json({
+            message: "Reject failed"
+        });
+
+    }
 
 });
