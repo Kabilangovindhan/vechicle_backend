@@ -10,6 +10,8 @@ const jwt = require("jsonwebtoken");
 const UserModel = require("./models/user");
 const VehicleModel = require("./models/vehicle");
 const BookingModel = require("./models/booking");
+const JobModel = require("./models/job");
+
 
 
 
@@ -23,7 +25,7 @@ function verifyToken(req, res, next) {
 
 	const token = bearerHeader.split(" ")[1];
 
-	jwt.verify(token, "SECRET_KEY", (err, decoded) => {
+	jwt.verify(token, process.env.JWT_SECRET || "secretkey", (err, decoded) => {
 		if (err) {
 			return res.status(403).json({ message: "Invalid Token" });
 		}
@@ -138,7 +140,7 @@ app.put("/api/vehicle/:id", async (req, res) => {
 // Get all users for User Management
 
 app.get("/api/user", async (req, res) => {
-	
+
 	try {
 		const users = await UserModel.find().sort({ createdAt: -1 });
 		res.json(users);
@@ -337,3 +339,218 @@ app.get("/api/booking/customer/:phone", async (req, res) => {
 })
 
 // ------------------------------------------------------------------------------------------------------------------------
+
+
+// Get ALL bookings (Admin)
+app.get("/api/booking", async (req, res) => {
+
+	try {
+
+		const bookings = await BookingModel
+			.find()
+			.populate("customer")
+			.populate("vehicle")
+			.sort({ createdAt: -1 });
+
+		res.json(bookings);
+
+	} catch (err) {
+
+		console.log(err);
+		res.status(500).json({ message: "Failed to fetch bookings" });
+
+	}
+
+});
+
+
+// Update booking status
+app.put("/api/booking/:id", async (req, res) => {
+
+	try {
+
+		const { status } = req.body;
+
+		const updated = await BookingModel.findByIdAndUpdate(
+			req.params.id,
+			{ status },
+			{ new: true }
+		);
+
+		res.json(updated);
+
+	} catch (err) {
+
+		console.log(err);
+		res.status(500).json({ message: "Failed to update status" });
+
+	}
+
+});
+
+
+// 
+// Admin approve booking and assign staff
+app.put("/api/admin/booking/:id/approve", verifyToken, async (req, res) => {
+
+	try {
+
+		const bookingId = req.params.id;
+		const { mechanicId, priority } = req.body;
+
+		// 1. Update booking status
+		const booking = await BookingModel.findByIdAndUpdate(
+			bookingId,
+			{ status: "Approved" },
+			{ new: true }
+		);
+
+		if (!booking) {
+			return res.status(404).json({ message: "Booking not found" });
+		}
+
+		// 2. Create Job and assign mechanic
+		const job = await JobModel.create({
+			booking: bookingId,
+			assignedStaff: mechanicId,
+			priority: priority || "Normal",
+			jobStatus: "Assigned"
+		});
+
+		res.json({
+			message: "Booking approved and job assigned",
+			booking,
+			job
+		});
+
+	} catch (err) {
+
+		console.log(err);
+		res.status(500).json({
+			message: "Approval failed"
+		});
+
+	}
+
+});
+
+// Get all staff users
+app.get("/api/admin/staff", verifyToken, async (req, res) => {
+
+	try {
+
+		const staff = await UserModel.find({ role: "staff" })
+			.select("_id name phone");
+
+		res.json(staff);
+
+	} catch (err) {
+
+		res.status(500).json({
+			message: "Failed to fetch staff"
+		});
+
+	}
+
+});
+
+
+
+
+app.put("/api/staff/booking/:id/reject", verifyToken, async (req, res) => {
+
+	try {
+
+		const booking = await BookingModel.findByIdAndUpdate(
+			req.params.id,
+			{ status: "Rejected" },
+			{ new: true }
+		);
+
+		res.json({
+			message: "Booking rejected",
+			booking
+		});
+
+	} catch (err) {
+
+		res.status(500).json({ message: "Reject failed" });
+
+	}
+
+});
+
+
+app.put("/api/staff/job/:id/assign", verifyToken, async (req, res) => {
+
+	try {
+
+		const { mechanicId, priority } = req.body;
+
+		const job = await JobModel.findByIdAndUpdate(
+			req.params.id,
+			{
+				assignedStaff: mechanicId,
+				priority: priority || "Normal",
+				jobStatus: "Assigned"
+			},
+			{ new: true }
+		)
+			.populate("assignedStaff")
+			.populate("booking");
+
+		res.json(job);
+
+	} catch (err) {
+
+		res.status(500).json({
+			message: "Assignment failed"
+		});
+
+	}
+
+});
+
+
+app.get("/api/staff/bookings/pending", verifyToken, async (req, res) => {
+
+	try {
+
+		const bookings = await BookingModel
+			.find({ status: "Pending" })
+			.populate("customer")
+			.populate("vehicle")
+			.sort({ createdAt: -1 });
+
+		res.json(bookings);
+
+	} catch (err) {
+
+		res.status(500).json({ message: "Fetch failed" });
+
+	}
+
+});
+
+
+app.get("/api/staff/jobs", verifyToken, async (req, res) => {
+
+	try {
+
+		const jobs = await JobModel
+			.find({ assignedStaff: req.user.id })
+			.populate({
+				path: "booking",
+				populate: ["customer", "vehicle"]
+			})
+			.populate("assignedStaff");
+
+		res.json(jobs);
+
+	} catch (err) {
+
+		res.status(500).json({ message: "Fetch jobs failed" });
+
+	}
+
+});
