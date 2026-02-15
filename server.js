@@ -14,8 +14,12 @@ const JobModel = require("./models/job");
 const InspectionModel = require("./models/inspection");
 const EstimateModel = require("./models/estimate");
 
+// ------------------------------------------------------------------------------------------------------------------------
+
+const customerRoutes = require("./routes/admin/customerManagement");
 
 
+// ------------------------------------------------------------------------------------------------------------------------
 
 
 function verifyToken(req, res, next) {
@@ -50,6 +54,8 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use('/api/customerManage', customerRoutes);
+
 
 // ------------------------------------------------------------------------------------------------------------------------
 
@@ -138,67 +144,7 @@ app.put("/api/vehicle/:id", async (req, res) => {
 	}
 });
 
-// ------------------------------------------------------------------------------------------------------------------------
 
-// Get all users for User Management
-
-app.get("/api/user", async (req, res) => {
-
-	try {
-		const users = await UserModel.find().sort({ createdAt: -1 });
-		res.json(users);
-	} catch (error) {
-		res.status(500).json({ message: error.message });
-	}
-});
-
-// ------------------------------------------------------------------------------------------------------------------------
-
-// Create users for User Management
-
-app.post("/api/user", async (req, res) => {
-
-	try {
-		const newUser = await UserModel.create(req.body);
-		res.json(newUser);
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({ error: err.message });
-	}
-});
-
-// ------------------------------------------------------------------------------------------------------------------------
-
-// Update users for User Management
-
-app.put("/api/user/:id", async (req, res) => {
-
-	try {
-		const updatedUser = await UserModel.findByIdAndUpdate(
-			req.params.id,
-			req.body,
-			{ new: true }
-		);
-		res.json(updatedUser);
-	} catch (err) {
-		res.status(500).json({ error: err.message });
-	}
-});
-
-// ------------------------------------------------------------------------------------------------------------------------
-
-// Delete users for User Management
-
-app.delete("/api/user/:id", async (req, res) => {
-
-	try {
-		await UserModel.findByIdAndDelete(req.params.id);
-		res.json({ message: "User Deleted Successfully" });
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({ error: err.message });
-	}
-});
 
 // ------------------------------------------------------------------------------------------------------------------------
 
