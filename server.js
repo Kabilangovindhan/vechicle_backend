@@ -561,195 +561,198 @@ app.get("/api/staff/jobs", verifyToken, async (req, res) => {
 
 app.post("/api/staff/inspection/:jobId", verifyToken, async (req, res) => {
 
-    try {
+	try {
 
-        const inspection = await InspectionModel.create({
+		const inspection = await InspectionModel.create({
 
-            job: req.params.jobId,
+			job: req.params.jobId,
 
-            issues: req.body.issues,
+			issues: req.body.issues,
 
-            remarks: req.body.remarks,
+			remarks: req.body.remarks,
 
-            images: req.body.images || [],
+			images: req.body.images || [],
 
-            inspectedBy: req.user.id
+			inspectedBy: req.user.id
 
-        });
+		});
 
-        // Update job status
-        await JobModel.findByIdAndUpdate(
-            req.params.jobId,
-            { jobStatus: "Inspection" }
-        );
+		// Update job status
+		await JobModel.findByIdAndUpdate(
+			req.params.jobId,
+			{ jobStatus: "Inspection" }
+		);
 
-        res.json(inspection);
+		res.json(inspection);
 
-    } catch (err) {
+	} catch (err) {
 
-        res.status(500).json({
-            message: "Inspection failed"
-        });
+		res.status(500).json({
+			message: "Inspection failed"
+		});
 
-    }
+	}
 
 });
 
 
 app.post("/api/staff/estimate/:jobId", verifyToken, async (req, res) => {
 
-    try {
+	try {
 
-        const { labourCost, partsCost, tax } = req.body;
+		const { labourCost, partsCost, tax } = req.body;
 
-        const totalCost =
-            Number(labourCost) +
-            Number(partsCost) +
-            Number(tax);
+		const totalCost =
+			Number(labourCost) +
+			Number(partsCost) +
+			Number(tax);
 
-        const estimate = await EstimateModel.create({
+		const estimate = await EstimateModel.create({
 
-            job: req.params.jobId,
+			job: req.params.jobId,
 
-            labourCost,
-            partsCost,
-            tax,
-            totalCost,
+			labourCharge: labourCost,
 
-            createdBy: req.user.id
+			partsCost,
 
-        });
+			tax,
 
-        await JobModel.findByIdAndUpdate(
-            req.params.jobId,
-            { jobStatus: "Waiting Approval" }
-        );
+			totalAmount: totalCost
 
-        res.json(estimate);
+		});
 
-    } catch (err) {
+		await JobModel.findByIdAndUpdate(
+			req.params.jobId,
+			{ jobStatus: "Waiting Approval" }
+		);
 
-        res.status(500).json({
-            message: "Estimate creation failed"
-        });
+		res.json(estimate);
 
-    }
+	} catch (err) {
+
+		console.log(err);
+
+		res.status(500).json({
+			message: "Estimate creation failed"
+		});
+
+	}
 
 });
 
 
 app.get("/api/customer/estimate/:jobId", verifyToken, async (req, res) => {
 
-    try {
+	try {
 
-        const estimate = await EstimateModel
-            .findOne({ job: req.params.jobId })
-            .populate({
-                path: "job",
-                populate: {
-                    path: "booking",
-                    populate: ["vehicle"]
-                }
-            });
+		const estimate = await EstimateModel
+			.findOne({ job: req.params.jobId })
+			.populate({
+				path: "job",
+				populate: {
+					path: "booking",
+					populate: ["vehicle"]
+				}
+			});
 
-        res.json(estimate);
+		res.json(estimate);
 
-    } catch (err) {
+	} catch (err) {
 
-        res.status(500).json({
-            message: "Fetch estimate failed"
-        });
+		res.status(500).json({
+			message: "Fetch estimate failed"
+		});
 
-    }
-
-});
-
-
-app.put("/api/customer/estimate/:id/approve", verifyToken, async (req, res) => {
-
-    try {
-
-        const estimate = await EstimateModel.findByIdAndUpdate(
-            req.params.id,
-            { status: "Approved" },
-            { new: true }
-        );
-
-        await JobModel.findByIdAndUpdate(
-            estimate.job,
-            { jobStatus: "Working" }
-        );
-
-        res.json({
-            message: "Estimate approved"
-        });
-
-    } catch (err) {
-
-        res.status(500).json({
-            message: "Approval failed"
-        });
-
-    }
+	}
 
 });
 
 
 app.put("/api/customer/estimate/:id/approve", verifyToken, async (req, res) => {
 
-    try {
+	try {
 
-        const estimate = await EstimateModel.findByIdAndUpdate(
-            req.params.id,
-            { status: "Approved" },
-            { new: true }
-        );
+		const estimate = await EstimateModel.findByIdAndUpdate(
+			req.params.id,
+			{ status: "Approved" },
+			{ new: true }
+		);
 
-        await JobModel.findByIdAndUpdate(
-            estimate.job,
-            { jobStatus: "Working" }
-        );
+		await JobModel.findByIdAndUpdate(
+			estimate.job,
+			{ jobStatus: "Working" }
+		);
 
-        res.json({
-            message: "Estimate approved"
-        });
+		res.json({
+			message: "Estimate approved"
+		});
 
-    } catch (err) {
+	} catch (err) {
 
-        res.status(500).json({
-            message: "Approval failed"
-        });
+		res.status(500).json({
+			message: "Approval failed"
+		});
 
-    }
+	}
+
+});
+
+
+app.put("/api/customer/estimate/:id/approve", verifyToken, async (req, res) => {
+
+	try {
+
+		const estimate = await EstimateModel.findByIdAndUpdate(
+			req.params.id,
+			{ status: "Approved" },
+			{ new: true }
+		);
+
+		await JobModel.findByIdAndUpdate(
+			estimate.job,
+			{ jobStatus: "Working" }
+		);
+
+		res.json({
+			message: "Estimate approved"
+		});
+
+	} catch (err) {
+
+		res.status(500).json({
+			message: "Approval failed"
+		});
+
+	}
 
 });
 
 
 app.put("/api/customer/estimate/:id/reject", verifyToken, async (req, res) => {
 
-    try {
+	try {
 
-        const estimate = await EstimateModel.findByIdAndUpdate(
-            req.params.id,
-            { status: "Rejected" },
-            { new: true }
-        );
+		const estimate = await EstimateModel.findByIdAndUpdate(
+			req.params.id,
+			{ status: "Rejected" },
+			{ new: true }
+		);
 
-        await JobModel.findByIdAndUpdate(
-            estimate.job,
-            { jobStatus: "Rejected" }
-        );
+		await JobModel.findByIdAndUpdate(
+			estimate.job,
+			{ jobStatus: "Rejected" }
+		);
 
-        res.json({
-            message: "Estimate rejected"
-        });
+		res.json({
+			message: "Estimate rejected"
+		});
 
-    } catch (err) {
+	} catch (err) {
 
-        res.status(500).json({
-            message: "Reject failed"
-        });
+		res.status(500).json({
+			message: "Reject failed"
+		});
 
-    }
+	}
 
 });
