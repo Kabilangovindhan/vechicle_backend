@@ -17,6 +17,12 @@ const EstimateModel = require("./models/estimate");
 // ------------------------------------------------------------------------------------------------------------------------
 
 const customerRoutes = require("./routes/admin/customerManagement");
+const vehicleRoutes = require("./routes/customer/vehicleManage");
+const adminBookingRoutes = require("./routes/admin/bookingManagement");
+const customerBookingRoutes = require("./routes/customer/cutomerBooking");
+const staffBookingRoutes = require("./routes/staff/staffBooking");
+const customerServiceTrackRoutes = require("./routes/customer/customerServiceTrack");
+const staffJobAssignRoutes = require("./routes/staff/staffJobAssign");
 
 
 // ------------------------------------------------------------------------------------------------------------------------
@@ -55,7 +61,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use('/api/customerManage', customerRoutes);
-
+app.use('/api/vehicle',vehicleRoutes);
+app.use('/api/adminBooking', adminBookingRoutes);
+app.use('/api/customerBooking', customerBookingRoutes);
+app.use('/api/staffBookingModel', staffBookingRoutes);
+app.use('/api/customerServiceTrack', customerServiceTrackRoutes);
+app.use('/api/staffJobAssign', staffJobAssignRoutes);
 
 // ------------------------------------------------------------------------------------------------------------------------
 
@@ -66,85 +77,6 @@ app.listen(PORT, () =>
 );
 
 // ------------------------------------------------------------------------------------------------------------------------
-
-// Get vehicle for Vechile Master
-
-app.get("/api/vehicle", async (req, res) => {
-
-	try {
-		const users = await VehicleModel.find();
-		res.json(users);
-	} catch (error) {
-		res.status(500).json({ message: error.message });
-	}
-});
-
-// ------------------------------------------------------------------------------------------------------------------------
-
-// Create vehicle for Vechile Master
-
-app.post("/api/vehicle/user", async (req, res) => {
-
-	try {
-		const users = await VehicleModel.find({ ownerPhone: req.body.phone });
-		res.json(users);
-	} catch (error) {
-		res.status(500).json({ message: error.message });
-	}
-});
-
-
-// ------------------------------------------------------------------------------------------------------------------------
-
-// Delete vehicle for Vechile Master
-
-app.delete("/api/vehicle/:id", async (req, res) => {
-
-	try {
-		await VehicleModel.findByIdAndDelete(req.params.id);
-		res.json({ message: "Deleted" });
-
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({ error: err.message });
-
-	}
-});
-
-// ------------------------------------------------------------------------------------------------------------------------
-
-// Create vehicle for Vechile Master
-
-app.post("/api/vehicle", async (req, res) => {
-
-	try {
-		const newUser = await VehicleModel.create(req.body);
-		res.json(newUser);
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({ error: err.message });
-	}
-});
-
-// ------------------------------------------------------------------------------------------------------------------------
-
-// Update vehicle for Vechile Master
-
-app.put("/api/vehicle/:id", async (req, res) => {
-
-	try {
-		const updated = await VehicleModel.findByIdAndUpdate(
-			req.params.id,
-			req.body,
-			{ new: true }
-		);
-		res.json(updated);
-	} catch (err) {
-		res.status(500).json({ error: err.message });
-	}
-});
-
-
 
 // ------------------------------------------------------------------------------------------------------------------------
 
@@ -236,198 +168,18 @@ app.post("/api/customer/login", async (req, res) => {
 
 // Create Booking
 
-app.post("/api/booking", async (req, res) => {
-
-	try {
-
-		const user = await UserModel.findOne({
-			phone: req.body.customerPhone
-		});
-
-		if (!user) {
-			return res.status(404).json({ message: "User not found" });
-		}
-
-		const booking = await BookingModel.create({
-			customer: user._id,
-			vehicle: req.body.vehicle,
-			serviceType: req.body.serviceType,
-			problemDescription: req.body.problemDescription,
-			appointmentDate: req.body.appointmentDate
-		});
-
-		res.json(booking);
-
-	} catch (err) {
-		console.log("Booking Create Error:", err);
-		res.status(500).json({ error: err.message });
-	}
-});
-
-// ------------------------------------------------------------------------------------------------------------------------
-
-app.get("/api/booking/customer/:phone", async (req, res) => {
-
-	try {
-
-		const user = await UserModel.findOne({ phone: req.params.phone });
-
-		if (!user) return res.json([]);
-
-		const bookings = await BookingModel
-			.find({ customer: user._id })
-			.populate("vehicle")
-			.sort({ createdAt: -1 });
-
-		res.json(bookings);
-
-	} catch (err) {
-		console.log("Booking Fetch Error:", err);
-		res.status(500).json([]);
-	}
-})
-
-// ------------------------------------------------------------------------------------------------------------------------
 
 
-// Get ALL bookings (Admin)
-app.get("/api/booking", async (req, res) => {
-
-	try {
-
-		const bookings = await BookingModel
-			.find()
-			.populate("customer")
-			.populate("vehicle")
-			.sort({ createdAt: -1 });
-
-		res.json(bookings);
-
-	} catch (err) {
-
-		console.log(err);
-		res.status(500).json({ message: "Failed to fetch bookings" });
-
-	}
-
-});
 
 
-// Update booking status
-app.put("/api/booking/:id", async (req, res) => {
 
-	try {
-
-		const { status } = req.body;
-
-		const updated = await BookingModel.findByIdAndUpdate(
-			req.params.id,
-			{ status },
-			{ new: true }
-		);
-
-		res.json(updated);
-
-	} catch (err) {
-
-		console.log(err);
-		res.status(500).json({ message: "Failed to update status" });
-
-	}
-
-});
-
-
-// 
-// Admin approve booking and assign staff
-app.put("/api/admin/booking/:id/approve", verifyToken, async (req, res) => {
-
-	try {
-
-		const bookingId = req.params.id;
-		const { mechanicId, priority } = req.body;
-
-		// 1. Update booking status
-		const booking = await BookingModel.findByIdAndUpdate(
-			bookingId,
-			{ status: "Approved" },
-			{ new: true }
-		);
-
-		if (!booking) {
-			return res.status(404).json({ message: "Booking not found" });
-		}
-
-		// 2. Create Job and assign mechanic
-		const job = await JobModel.create({
-			booking: bookingId,
-			assignedStaff: mechanicId,
-			priority: priority || "Normal",
-			jobStatus: "Assigned"
-		});
-
-		res.json({
-			message: "Booking approved and job assigned",
-			booking,
-			job
-		});
-
-	} catch (err) {
-
-		console.log(err);
-		res.status(500).json({
-			message: "Approval failed"
-		});
-
-	}
-
-});
 
 // Get all staff users
-app.get("/api/admin/staff", verifyToken, async (req, res) => {
-
-	try {
-
-		const staff = await UserModel.find({ role: "staff" })
-			.select("_id name phone");
-
-		res.json(staff);
-
-	} catch (err) {
-
-		res.status(500).json({
-			message: "Failed to fetch staff"
-		});
-
-	}
-
-});
 
 
 
 
-app.put("/api/staff/booking/:id/reject", verifyToken, async (req, res) => {
 
-	try {
-
-		const booking = await BookingModel.findByIdAndUpdate(
-			req.params.id,
-			{ status: "Rejected" },
-			{ new: true }
-		);
-
-		res.json({
-			message: "Booking rejected",
-			booking
-		});
-
-	} catch (err) {
-
-		res.status(500).json({ message: "Reject failed" });
-
-	}
-
-});
 
 
 app.put("/api/staff/job/:id/assign", verifyToken, async (req, res) => {
@@ -461,48 +213,8 @@ app.put("/api/staff/job/:id/assign", verifyToken, async (req, res) => {
 });
 
 
-app.get("/api/staff/bookings/pending", verifyToken, async (req, res) => {
-
-	try {
-
-		const bookings = await BookingModel
-			.find({ status: "Pending" })
-			.populate("customer")
-			.populate("vehicle")
-			.sort({ createdAt: -1 });
-
-		res.json(bookings);
-
-	} catch (err) {
-
-		res.status(500).json({ message: "Fetch failed" });
-
-	}
-
-});
 
 
-app.get("/api/staff/jobs", verifyToken, async (req, res) => {
-
-	try {
-
-		const jobs = await JobModel
-			.find({ assignedStaff: req.user.id })
-			.populate({
-				path: "booking",
-				populate: ["customer", "vehicle"]
-			})
-			.populate("assignedStaff");
-
-		res.json(jobs);
-
-	} catch (err) {
-
-		res.status(500).json({ message: "Fetch jobs failed" });
-
-	}
-
-});
 
 
 app.post("/api/staff/inspection/:jobId", verifyToken, async (req, res) => {
