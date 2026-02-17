@@ -24,7 +24,6 @@ const staffBookingRoutes = require("./routes/staff/staffBooking");
 const customerServiceTrackRoutes = require("./routes/customer/customerServiceTrack");
 const staffJobAssignRoutes = require("./routes/staff/staffJobAssign");
 
-
 // ------------------------------------------------------------------------------------------------------------------------
 
 
@@ -58,7 +57,7 @@ connectDB();
 
 const app = express();
 
-app.use(cors());
+app.use(cors()); 
 app.use(express.json());
 app.use('/api/customerManage', customerRoutes);
 app.use('/api/vehicle',vehicleRoutes);
@@ -75,8 +74,6 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>
 	console.log(`Server running on port ${PORT}`)
 );
-
-// ------------------------------------------------------------------------------------------------------------------------
 
 // ------------------------------------------------------------------------------------------------------------------------
 
@@ -166,23 +163,42 @@ app.post("/api/customer/login", async (req, res) => {
 
 // ------------------------------------------------------------------------------------------------------------------------
 
-// Create Booking
+
+
+// router.post("/fetchbooking", async (req, res) => {
+
+//     console.log('first')
+
+//     try {
+
+//         const user = await UserModel.findOne({
+//             phone: req.body.customerPhone
+//         });
+
+//         if (!user) {
+//             return res.status(404).json({ message: "User not found" });
+//         }
+
+//         const booking = await BookingModel.create({
+//             customer: user._id,
+//             vehicle: req.body.vehicle,
+//             serviceType: req.body.serviceType,
+//             problemDescription: req.body.problemDescription,
+//             appointmentDate: req.body.appointmentDate
+//         });
+
+//         res.json(booking);
+
+//     } catch (err) {
+//         console.log("Booking Create Error:", err);
+//         res.status(500).json({ error: err.message });
+//     }
+// });
 
 
 
 
-
-
-
-// Get all staff users
-
-
-
-
-
-
-
-app.put("/api/staff/job/:id/assign", verifyToken, async (req, res) => {
+app.put("/api/staff/job/:id/assign", async (req, res) => {
 
 	try {
 
@@ -217,7 +233,7 @@ app.put("/api/staff/job/:id/assign", verifyToken, async (req, res) => {
 
 
 
-app.post("/api/staff/inspection/:jobId", verifyToken, async (req, res) => {
+app.post("/api/staff/inspection/:jobId", async (req, res) => {
 
 	try {
 
@@ -254,7 +270,7 @@ app.post("/api/staff/inspection/:jobId", verifyToken, async (req, res) => {
 });
 
 
-app.post("/api/staff/estimate/:jobId", verifyToken, async (req, res) => {
+app.post("/api/staff/estimate/:jobId", async (req, res) => {
 
 	try {
 
@@ -299,7 +315,7 @@ app.post("/api/staff/estimate/:jobId", verifyToken, async (req, res) => {
 });
 
 
-app.get("/api/customer/estimate/:jobId", verifyToken, async (req, res) => {
+app.get("/api/customer/estimate/:jobId", async (req, res) => {
 
 	try {
 
@@ -326,7 +342,7 @@ app.get("/api/customer/estimate/:jobId", verifyToken, async (req, res) => {
 });
 
 
-app.put("/api/customer/estimate/:id/approve", verifyToken, async (req, res) => {
+app.put("/api/customer/estimate/:id/approve", async (req, res) => {
 
 	try {
 
@@ -356,7 +372,7 @@ app.put("/api/customer/estimate/:id/approve", verifyToken, async (req, res) => {
 });
 
 
-app.put("/api/customer/estimate/:id/approve", verifyToken, async (req, res) => {
+app.put("/api/customer/estimate/:id/approve", async (req, res) => {
 
 	try {
 
@@ -386,7 +402,7 @@ app.put("/api/customer/estimate/:id/approve", verifyToken, async (req, res) => {
 });
 
 
-app.put("/api/customer/estimate/:id/reject", verifyToken, async (req, res) => {
+app.put("/api/customer/estimate/:id/reject", async (req, res) => {
 
 	try {
 

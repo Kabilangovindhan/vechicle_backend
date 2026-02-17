@@ -1,77 +1,51 @@
 const express = require("express");
 const router = express.Router();
+const UserModel = require("../../models/user");
+const BookingModel = require("../../models/booking");
 
-function verifyToken(req, res, next) {
+// ------------------------------------------------------------------------------------------------------------------------
 
-	const bearerHeader = req.headers["authorization"];
+// Get staff details for admin to assign a job
 
-	if (!bearerHeader) {
-		return res.status(401).json({ message: "Access Denied. No Token Provided" });
-	}
-
-	const token = bearerHeader.split(" ")[1];
-
-	jwt.verify(token, process.env.JWT_SECRET || "secretkey", (err, decoded) => {
-		if (err) {
-			return res.status(403).json({ message: "Invalid Token" });
-		}
-
-		req.user = decoded;
-		next();
-	});
-}
-
-// create
-router.get("/staff", verifyToken, async (req, res) => {
+router.get("/staff", async (req, res) => {
 
     try {
 
-        const staff = await UserModel.find({ role: "staff" })
-            .select("_id name phone");
-
+        const staff = await UserModel.find({ role: "staff" }).select("_id name phone");
         res.json(staff);
-
     } catch (err) {
-
+        console.log('Error in fetching staff name : ', err)
         res.status(500).json({
             message: "Failed to fetch staff"
         });
 
     }
-
 });
-//
 
-router.post("/fetchbooking", async (req, res) => {
+// ------------------------------------------------------------------------------------------------------------------------
+
+// For all booking for admin menu and also assing staff to a job who is unassingned
+
+router.get("/fetchbooking", async (req, res) => {
 
     try {
 
-        const user = await UserModel.findOne({
-            phone: req.body.customerPhone
-        });
-
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        const booking = await BookingModel.create({
-            customer: user._id,
-            vehicle: req.body.vehicle,
-            serviceType: req.body.serviceType,
-            problemDescription: req.body.problemDescription,
-            appointmentDate: req.body.appointmentDate
-        });
-
+        const booking = await BookingModel.find()
+            .populate("customer", "name phone email")   
+            .populate("vehicle", "vehicleNumber brand model");
         res.json(booking);
 
     } catch (err) {
-        console.log("Booking Create Error:", err);
-        res.status(500).json({ error: err.message });
+        console.log('Error in fetching staff name : ', err)
+        res.status(500).json({ message: "Failed to fetch staff" });
     }
 });
 
+// ------------------------------------------------------------------------------------------------------------------------
+
 // Update booking status
-router.put("/update:id", async (req, res) => {
+
+router.put("/update/:id", async (req, res) => {
 
     try {
 
@@ -94,10 +68,11 @@ router.put("/update:id", async (req, res) => {
 
 });
 
-
+// ------------------------------------------------------------------------------------------------------------------------
 
 // Admin approve booking and assign staff
-router.put("/approvebooking/:id/approve", verifyToken, async (req, res) => {
+
+router.put("/approvebooking/:id/approve", async (req, res) => {
 
     try {
 
@@ -125,19 +100,15 @@ router.put("/approvebooking/:id/approve", verifyToken, async (req, res) => {
 
         res.json({
             message: "Booking approved and job assigned",
-            booking,
-            job
+            booking, job
         });
 
     } catch (err) {
-
-        console.log(err);
-        res.status(500).json({
-            message: "Approval failed"
-        });
-
+        console.log('Error in approving booking : ', err);
+        res.status(500).json({message: "Approval failed"});
     }
-
 });
+
+// ------------------------------------------------------------------------------------------------------------------------
 
 module.exports = router;
