@@ -17,6 +17,10 @@ const myVehicleRoutes = require("./routes/customer/myVehicle");
 const serviceTrackingRoutes = require("./routes/customer/serviceTracking");
 const serviceBookingRoutes = require("./routes/customer/serviceBooking");
 
+// Staff Routes
+const assignedJobsRoutes = require("./routes/staff/assignedJobs");
+const inspectionReportRoutes = require("./routes/staff/inspectionReport");
+
 // ------------------------------------------------------------------------------------------------------------------------
 
 dotenv.config({ quiet: true });
@@ -41,6 +45,10 @@ app.use('/api/authentication', authenticationRoutes);
 app.use('/api/myVehicle', myVehicleRoutes);
 app.use('/api/serviceBooking', serviceBookingRoutes);
 app.use('/api/serviceTracking', serviceTrackingRoutes);
+
+// Staff Routes
+app.use('/api/assignedJobs', assignedJobsRoutes);
+app.use('/api/inspectionReport', inspectionReportRoutes);
 
 // ------------------------------------------------------------------------------------------------------------------------
 
