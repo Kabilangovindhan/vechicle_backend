@@ -50,6 +50,7 @@ app.use('/api/serviceTracking', serviceTrackingRoutes);
 app.use('/api/assignedJobs', assignedJobsRoutes);
 app.use('/api/inspectionReport', inspectionReportRoutes);
 
+
 // ------------------------------------------------------------------------------------------------------------------------
 
 const PORT = process.env.PORT || 5000;

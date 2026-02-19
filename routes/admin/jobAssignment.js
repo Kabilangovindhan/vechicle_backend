@@ -111,4 +111,25 @@ router.put("/approvebooking/:id/approve", async (req, res) => {
 
 // ------------------------------------------------------------------------------------------------------------------------
 
+router.put("/updateMechanic/:id", async (req, res) => {
+
+    try {
+
+        const { mechanicId } = req.body;
+
+        await BookingModel.findByIdAndUpdate(req.params.id, {
+            mechanic: mechanicId
+        });
+
+        res.json({ message: "Mechanic updated" });
+
+    } catch (err) {
+
+        res.status(500).json({ message: "Update failed" });
+
+    }
+
+});
+
+
 module.exports = router;
