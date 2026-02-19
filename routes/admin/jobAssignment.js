@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const UserModel = require("../../models/user");
 const BookingModel = require("../../models/booking");
+const JobModel = require("../../models/job")
 
 // ------------------------------------------------------------------------------------------------------------------------
 
@@ -31,7 +32,7 @@ router.get("/fetchbooking", async (req, res) => {
     try {
 
         const booking = await BookingModel.find()
-            .populate("customer", "name phone email")   
+            .populate("customer", "name phone email")
             .populate("vehicle", "vehicleNumber brand model");
         res.json(booking);
 
@@ -39,33 +40,6 @@ router.get("/fetchbooking", async (req, res) => {
         console.log('Error in fetching staff name : ', err)
         res.status(500).json({ message: "Failed to fetch staff" });
     }
-});
-
-// ------------------------------------------------------------------------------------------------------------------------
-
-// Update booking status
-
-router.put("/update/:id", async (req, res) => {
-
-    try {
-
-        const { status } = req.body;
-
-        const updated = await BookingModel.findByIdAndUpdate(
-            req.params.id,
-            { status },
-            { new: true }
-        );
-
-        res.json(updated);
-
-    } catch (err) {
-
-        console.log(err);
-        res.status(500).json({ message: "Failed to update status" });
-
-    }
-
 });
 
 // ------------------------------------------------------------------------------------------------------------------------
@@ -83,7 +57,6 @@ router.put("/approvebooking/:id/approve", async (req, res) => {
         const booking = await BookingModel.findByIdAndUpdate(
             bookingId,
             { status: "Approved" },
-            { new: true }
         );
 
         if (!booking) {
@@ -105,31 +78,10 @@ router.put("/approvebooking/:id/approve", async (req, res) => {
 
     } catch (err) {
         console.log('Error in approving booking : ', err);
-        res.status(500).json({message: "Approval failed"});
+        res.status(500).json({ message: "Approval failed" });
     }
 });
 
 // ------------------------------------------------------------------------------------------------------------------------
-
-router.put("/updateMechanic/:id", async (req, res) => {
-
-    try {
-
-        const { mechanicId } = req.body;
-
-        await BookingModel.findByIdAndUpdate(req.params.id, {
-            mechanic: mechanicId
-        });
-
-        res.json({ message: "Mechanic updated" });
-
-    } catch (err) {
-
-        res.status(500).json({ message: "Update failed" });
-
-    }
-
-});
-
 
 module.exports = router;
