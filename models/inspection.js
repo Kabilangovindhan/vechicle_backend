@@ -2,10 +2,12 @@ const mongoose = require("mongoose");
 
 const inspectionSchema = new mongoose.Schema({
     job: { type: mongoose.Schema.Types.ObjectId, ref: "Job" },
-    issuesFound: [String],
+    issuesFound: [
+        { title: String, description: String }
+    ],
     remarks: String,
     beforeImages: [String],
-    inspectedBy: { type: mongoose.Schema.Types.ObjectId, ref: "user" }
+    inspectedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
 }, { timestamps: true });
 
 module.exports = mongoose.model("Inspection", inspectionSchema);
