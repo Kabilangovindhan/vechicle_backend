@@ -140,5 +140,57 @@ router.get("/fetch-staff", async (req, res) => {
 });
 
 // ------------------------------------------------------------------------------------------------------------------------
+ 
+//assignedjob
+// router.get("/assigned/:phone", async (req, res) => {
+//      console.log("hello")
+//      console.log(req.body)
+//     try {
 
+//         const phone = req.params.phone;
+
+//         // find staff user
+//         const staff = await UserModel.findOne({ phone });
+
+//         if (!staff) {
+             
+//             return res.status(404).json({
+//                 message: "Staff not found"
+//             });
+
+//         }
+
+//         // fetch assigned jobs
+//         const jobs = await JobModel.find({
+//             assignedStaff: staff._id
+//         })
+//         .populate({
+//             path: "booking",
+//             populate: [
+//                 {
+//                     path: "vehicle",
+//                     select: "vehicleNumber brand model"
+//                 },
+//                 {
+//                     path: "customer",
+//                     select: "name phone"
+//                 }
+//             ]
+//         })
+//         .sort({ createdAt: -1 });
+
+//         res.json(jobs);
+
+//     }
+//     catch (err) {
+
+//         console.error("Fetch Assigned Jobs Error:", err);
+
+//         res.status(500).json({
+//             message: "Error fetching jobs"
+//         });
+
+//     }
+
+// });
 module.exports = router;
