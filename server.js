@@ -18,12 +18,8 @@ const serviceTrackingRoutes = require("./routes/customer/serviceTracking");
 const serviceBookingRoutes = require("./routes/customer/serviceBooking");
 const customerEstimateRoutes = require("./routes/customer/customerEstimate");
 
-
-
-
-
 // Staff Routes
-const assignedJobsRoutes = require("./routes/staff/assignedJobs");
+const jobManagementRoutes = require("./routes/staff/jobManagement");
 const inspectionReportRoutes = require("./routes/staff/inspectionReport");
 
 // ------------------------------------------------------------------------------------------------------------------------
@@ -52,10 +48,8 @@ app.use('/api/serviceBooking', serviceBookingRoutes);
 app.use('/api/serviceTracking', serviceTrackingRoutes);
 app.use("/api/customer/estimate", customerEstimateRoutes);
 
-
-
 // Staff Routes
-app.use('/api/assignedJobs', assignedJobsRoutes);
+app.use('/api/jobManagement', jobManagementRoutes);
 app.use('/api/inspectionReport', inspectionReportRoutes);
 
 

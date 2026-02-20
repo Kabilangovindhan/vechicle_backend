@@ -12,9 +12,10 @@ const bookingSchema = new mongoose.Schema({
     appointmentDate: Date,
     status: {
         type: String,
-        enum: ["Pending", "Approved", "Rejected", "In Progress", "Completed", "Delivered"],
+        enum: ["Pending", "Approved", "Rejected"],
         default: "Pending"
-    }
+    },
+    rejectedReason: String,
 }, { timestamps: true });
 
 module.exports = mongoose.model("Booking", bookingSchema);

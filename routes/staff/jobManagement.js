@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-
 const JobModel = require("../../models/job");
 const UserModel = require("../../models/user");
 
+// ------------------------------------------------------------------------------------------------------------------------
 
 // GET jobs assigned to staff
 
@@ -42,6 +42,7 @@ router.get("/fetch/:phone", async (req, res) => {
 
 });
 
+// ------------------------------------------------------------------------------------------------------------------------
 
 // UPDATE JOB STATUS
 
@@ -98,9 +99,14 @@ router.put("/update/:jobId", async (req, res) => {
 
 });
 
+// ------------------------------------------------------------------------------------------------------------------------
+
 // POST: Save both Inspection and Estimate
+
 router.post("/save-full-report/:jobId", async (req, res) => {
+
     try {
+
         const { jobId } = req.params;
         const { issues, remarks, parts, labor, totalAmount } = req.body;
 
@@ -120,7 +126,10 @@ router.post("/save-full-report/:jobId", async (req, res) => {
     }
 });
 
+// ------------------------------------------------------------------------------------------------------------------------
+
 // Add this to your user routes
+
 router.get("/fetch-staff", async (req, res) => {
     try {
         const staff = await User.find({ role: "staff" }).select("name _id phone");
@@ -130,5 +139,6 @@ router.get("/fetch-staff", async (req, res) => {
     }
 });
 
+// ------------------------------------------------------------------------------------------------------------------------
 
 module.exports = router;
