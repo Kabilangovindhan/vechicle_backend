@@ -31,7 +31,7 @@ router.get("/fetchbooking", async (req, res) => {
 
     try {
 
-        const booking = await BookingModel.find()
+        const booking = await BookingModel.find({ status: "Pending" })
             .populate("customer", "name phone email")
             .populate("vehicle", "vehicleNumber brand model");
         res.json(booking);
@@ -83,5 +83,36 @@ router.put("/approvebooking/:id/approve", async (req, res) => {
 });
 
 // ------------------------------------------------------------------------------------------------------------------------
+//reject btn//
 
+router.put("/update/:id", async (req, res) => {
+
+    try {
+
+        const { status, rejectedReason } = req.body;
+
+        const booking = await BookingModel.findByIdAndUpdate(
+            req.params.id,
+            {
+                status,
+                rejectedReason: status === "Rejected"
+                    ? rejectedReason
+                    : undefined
+            },
+            { new: true }
+        );
+
+        res.json(booking);
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+            message: "Update failed"
+        });
+
+    }
+
+});
 module.exports = router;
