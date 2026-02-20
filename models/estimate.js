@@ -2,10 +2,17 @@ const mongoose = require("mongoose");
 
 const estimateSchema = new mongoose.Schema({
     job: { type: mongoose.Schema.Types.ObjectId, ref: "Job" },
-    labourCharge: Number,
-    partsCost: Number,
+    items: [
+        {
+            issueTitle: String,
+            description: String,
+            labourCharge: Number,
+            partsCost: Number,
+            total: Number
+        }
+    ],
     tax: Number,
-    totalAmount: Number,
+    grandTotal: Number,
     approvalStatus: {
         type: String,
         enum: ["Pending", "Approved", "Rejected"],
@@ -14,4 +21,3 @@ const estimateSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 module.exports = mongoose.model("Estimate", estimateSchema);
-
