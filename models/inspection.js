@@ -6,7 +6,6 @@ const inspectionSchema = new mongoose.Schema({
         { title: String, description: String }
     ],
     remarks: String,
-    beforeImages: [String],
     inspectedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
 }, { timestamps: true });
 
