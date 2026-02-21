@@ -21,6 +21,8 @@ const customerEstimateRoutes = require("./routes/customer/customerEstimate");
 // Staff Routes
 const jobManagementRoutes = require("./routes/staff/jobManagement");
 const inspectionReportRoutes = require("./routes/staff/inspectionReport");
+const assignedJobRoutes = require("./routes/staff/assignedJob");
+
 
 // ------------------------------------------------------------------------------------------------------------------------
 
@@ -51,6 +53,7 @@ app.use("/api/customer/estimate", customerEstimateRoutes);
 // Staff Routes
 app.use('/api/jobManagement', jobManagementRoutes);
 app.use('/api/inspectionReport', inspectionReportRoutes);
+app.use('api/jobManagement', assignedJobRoutes);
 
 
 // ------------------------------------------------------------------------------------------------------------------------
