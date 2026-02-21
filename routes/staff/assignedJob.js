@@ -1,16 +1,51 @@
 const express = require("express");
 const router = express.Router();
 
-const Estimate = require("../models/estimate");
-const Job = require("../models/Job");
+const Estimate = require("../../models/estimate");
+const JobModel = require("../../models/job");
+const UserModel = require("../../models/user");
 
-
+//inspection
 // ==========================================
+router.get("/fetch/:phone", async (req, res) => {
+
+    try {
+
+        const phone = req.params.phone;
+
+        const staff = await UserModel.findOne({ phone });
+
+        if (!staff)
+            return res.status(404).json({ message: "Staff not found" });
+
+        const jobs = await JobModel.find({ assignedStaff: staff._id })
+            .populate({
+                path: "booking",
+                populate: [
+                    { path: "vehicle", select: "vehicleNumber brand model" },
+                    { path: "customer", select: "name phone" }
+                ]
+            })
+            .sort({ createdAt: -1 });
+
+        res.json(jobs);
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+            message: "Failed to fetch assigned jobs"
+        });
+
+    }
+
+});
 // SAVE ESTIMATE
 // POST /api/jobManagement/estimate/:jobId
 // ==========================================
 router.post("/estimate/:jobId", async (req, res) => {
-    console.log("hello"); // Debug log
+    
     try {
         const { jobId } = req.params;
         const { items, tax, grandTotal } = req.body;
@@ -24,7 +59,7 @@ router.post("/estimate/:jobId", async (req, res) => {
         }
 
         // Check job exists
-        const job = await Job.findById(jobId);
+        const job = await JobModel.findById(jobId);
         if (!job) {
             return res.status(404).json({
                 success: false,

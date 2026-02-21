@@ -53,7 +53,7 @@ app.use("/api/customer/estimate", customerEstimateRoutes);
 // Staff Routes
 app.use('/api/jobManagement', jobManagementRoutes);
 app.use('/api/inspectionReport', inspectionReportRoutes);
-app.use('api/jobManagement', assignedJobRoutes);
+app.use('/api/assignedJob', assignedJobRoutes);
 
 
 // ------------------------------------------------------------------------------------------------------------------------
