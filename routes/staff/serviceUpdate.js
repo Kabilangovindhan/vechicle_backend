@@ -9,13 +9,14 @@ const UserModel = require("../../models/user");
 // GET JOBS BY STATUS
 // /api/waitingApproval/approvalQueue?status=Working
 // ============================================
-router.get("/approvalQueue", async (req, res) => {
+router.get("/jobs", async (req, res) => {
     try {
         // Capture status from query params, default to "Working" if not provided
+        console.log("hello")
         const { status } = req.query;
         
         // Allowed statuses to prevent unauthorized queries
-        const validStatuses = ["Working", "Completed", "Ready Delivery", "Waiting Approval"];
+        const validStatuses = ["Working", "Completed", "Ready Delivery"];
         const queryStatus = validStatuses.includes(status) ? status : "Working";
 
         const jobs = await Job.find({

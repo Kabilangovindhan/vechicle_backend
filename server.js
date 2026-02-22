@@ -21,7 +21,7 @@ const EstimateApprovalRoutes = require("./routes/customer/customerEstimate");
 // Staff Routes
 const inspectionReportRoutes = require("./routes/staff/inspectionReport");
 const assignedJobRoutes = require("./routes/staff/assignedJob");
-const waitingApprovalRoutes = require("./routes/staff/waitingApproval");
+const waitingApprovalRoutes = require("./routes/staff/ApprovalQueue");
 const serviceUpdateRoutes = require("./routes/staff/serviceUpdate");
 
 // ------------------------------------------------------------------------------------------------------------------------
