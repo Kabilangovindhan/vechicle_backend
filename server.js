@@ -16,7 +16,7 @@ const authenticationRoutes = require("./routes/common/authentication");
 const myVehicleRoutes = require("./routes/customer/myVehicle");
 const serviceTrackingRoutes = require("./routes/customer/serviceTracking");
 const serviceBookingRoutes = require("./routes/customer/serviceBooking");
-const customerEstimateRoutes = require("./routes/customer/customerEstimate");
+const EstimateApprovalRoutes = require("./routes/customer/customerEstimate");
 
 // Staff Routes
 const jobManagementRoutes = require("./routes/staff/jobManagement");
@@ -48,7 +48,7 @@ app.use('/api/authentication', authenticationRoutes);
 app.use('/api/myVehicle', myVehicleRoutes);
 app.use('/api/serviceBooking', serviceBookingRoutes);
 app.use('/api/serviceTracking', serviceTrackingRoutes);
-app.use("/api/customer/estimate", customerEstimateRoutes);
+app.use("/api/estimateApproval", EstimateApprovalRoutes);
 
 // Staff Routes
 app.use('/api/jobManagement', jobManagementRoutes);
