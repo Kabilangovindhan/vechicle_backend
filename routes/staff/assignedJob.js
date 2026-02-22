@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
-
 const Estimate = require("../../models/estimate");
 const JobModel = require("../../models/job");
 const UserModel = require("../../models/user");
 
-//inspection
-// ==========================================
+// ------------------------------------------------------------------------------------------------------------------------
+
+// Inspection
+
 router.get("/fetch/:phone", async (req, res) => {
 
     try {
@@ -18,7 +19,7 @@ router.get("/fetch/:phone", async (req, res) => {
         if (!staff)
             return res.status(404).json({ message: "Staff not found" });
 
-        const jobs = await JobModel.find({ assignedStaff: staff._id })
+        const jobs = await JobModel.find({ assignedStaff: staff._id, jobStatus: { $in: ["Assigned", "Inspection"] } })
             .populate({
                 path: "booking",
                 populate: [
@@ -31,9 +32,7 @@ router.get("/fetch/:phone", async (req, res) => {
         res.json(jobs);
 
     } catch (err) {
-
         console.log(err);
-
         res.status(500).json({
             message: "Failed to fetch assigned jobs"
         });
@@ -41,11 +40,13 @@ router.get("/fetch/:phone", async (req, res) => {
     }
 
 });
-// SAVE ESTIMATE
-// POST /api/jobManagement/estimate/:jobId
-// ==========================================
+
+// ------------------------------------------------------------------------------------------------------------------------
+
+// Save Estimate
+
 router.post("/estimate/:jobId", async (req, res) => {
-    
+
     try {
         const { jobId } = req.params;
         const { items, tax, grandTotal } = req.body;
@@ -81,7 +82,7 @@ router.post("/estimate/:jobId", async (req, res) => {
 
         await estimate.save();
 
-        // Update job status (optional but recommended)
+        // Update job status
         job.jobStatus = "Waiting Approval";
         await job.save();
 
@@ -99,5 +100,7 @@ router.post("/estimate/:jobId", async (req, res) => {
         });
     }
 });
+
+// ------------------------------------------------------------------------------------------------------------------------
 
 module.exports = router;
