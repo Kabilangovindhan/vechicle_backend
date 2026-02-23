@@ -21,7 +21,7 @@ const EstimateApprovalRoutes = require("./routes/customer/estimateAppproval");
 // Staff Routes
 const inspectionReportRoutes = require("./routes/staff/inspectionReport");
 const assignedJobRoutes = require("./routes/staff/assignedJob");
-const waitingApprovalRoutes = require("./routes/staff/ApprovalQueue");
+const approvalQueueRoutes = require("./routes/staff/approvalQueue");
 const serviceUpdateRoutes = require("./routes/staff/serviceUpdate");
 
 // ------------------------------------------------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ app.use("/api/estimateApproval", EstimateApprovalRoutes);
 // Staff Routes
 app.use('/api/inspectionReport', inspectionReportRoutes);
 app.use('/api/assignedJob', assignedJobRoutes);
-app.use('/api/waitingApproval', waitingApprovalRoutes);
+app.use('/api/approvalQueue', approvalQueueRoutes);
 app.use('/api/serviceUpdate',serviceUpdateRoutes);
 
 

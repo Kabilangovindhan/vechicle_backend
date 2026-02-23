@@ -1,9 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
-const Estimate = require("../../models/estimate");
 const Job = require("../../models/job");
-const UserModel = require("../../models/user");
 
 // ============================================
 // GET JOBS BY STATUS

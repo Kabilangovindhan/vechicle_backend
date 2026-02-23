@@ -1,18 +1,12 @@
 const express = require("express");
 const router = express.Router();
-
 const Estimate = require("../../models/estimate");
 const Job = require("../../models/job");
 const UserModel = require("../../models/user");
 
+// ------------------------------------------------------------------------------------------------------------------------
 
-
-// ============================================
-// GET WAITING APPROVAL JOBS
-// /api/jobManagement/approvalQueue
-// ============================================
 router.get("/approvalQueue", async (req, res) => {
-
 
     try {
 
@@ -33,15 +27,10 @@ router.get("/approvalQueue", async (req, res) => {
                 ]
             })
             .sort({ createdAt: -1 });
-
-
         res.json(jobs);
-
     }
     catch (err) {
-
         console.log("show error", err);
-
         res.status(500).json({
             message: "Failed to fetch approval queue"
         });
@@ -49,5 +38,7 @@ router.get("/approvalQueue", async (req, res) => {
     }
 
 });
+
+// ------------------------------------------------------------------------------------------------------------------------
 
 module.exports = router;
