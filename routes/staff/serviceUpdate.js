@@ -12,7 +12,7 @@ const UserModel = require("../../models/user");
 router.get("/jobs", async (req, res) => {
     try {
         // Capture status from query params, default to "Working" if not provided
-        console.log("hello")
+        // console.log("hello")
         const { status } = req.query;
         
         // Allowed statuses to prevent unauthorized queries
@@ -36,7 +36,7 @@ router.get("/jobs", async (req, res) => {
             ]
         })
         .sort({ createdAt: -1 });
-
+           console.log(jobs)
         res.json(jobs);
 
     } catch (err) {

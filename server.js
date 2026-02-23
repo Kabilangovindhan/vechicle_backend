@@ -16,7 +16,7 @@ const authenticationRoutes = require("./routes/common/authentication");
 const myVehicleRoutes = require("./routes/customer/myVehicle");
 const serviceTrackingRoutes = require("./routes/customer/serviceTracking");
 const serviceBookingRoutes = require("./routes/customer/serviceBooking");
-const EstimateApprovalRoutes = require("./routes/customer/customerEstimate");
+const EstimateApprovalRoutes = require("./routes/customer/estimateAppproval");
 
 // Staff Routes
 const inspectionReportRoutes = require("./routes/staff/inspectionReport");
