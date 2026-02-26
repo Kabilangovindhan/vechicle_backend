@@ -8,6 +8,7 @@ const connectDB = require("./config/db");
 // Admin Routes
 const customerManagementRoutes = require("./routes/admin/customerManagement");
 const jobAssignmentRoutes = require("./routes/admin/jobAssignment");
+const jobControlCenterRoutes = require("./routes/admin/jobControlCenter");
 
 // Common Routes
 const authenticationRoutes = require("./routes/common/authentication");
@@ -41,6 +42,7 @@ app.use(express.json());
 // Admin Routes
 app.use('/api/customerManagement', customerManagementRoutes);
 app.use('/api/jobAssignment', jobAssignmentRoutes);
+app.use('/api/jobControlCenter', jobControlCenterRoutes);
 
 // Common Routes
 app.use('/api/authentication', authenticationRoutes);
