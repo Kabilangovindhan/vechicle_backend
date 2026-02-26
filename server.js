@@ -9,6 +9,8 @@ const connectDB = require("./config/db");
 const customerManagementRoutes = require("./routes/admin/customerManagement");
 const jobAssignmentRoutes = require("./routes/admin/jobAssignment");
 const jobControlCenterRoutes = require("./routes/admin/jobControlCenter");
+const inspectionEstimationReportRoutes = require("./routes/admin/inspectionEstimationReport");
+const billingInvoiceRoutes = require("./routes/admin/billingInvoice");
 
 // Common Routes
 const authenticationRoutes = require("./routes/common/authentication");
@@ -43,6 +45,8 @@ app.use(express.json());
 app.use('/api/customerManagement', customerManagementRoutes);
 app.use('/api/jobAssignment', jobAssignmentRoutes);
 app.use('/api/jobControlCenter', jobControlCenterRoutes);
+app.use('/api/inspectionestimateReport', inspectionEstimationReportRoutes);
+app.use('/api/billingInvoice', billingInvoiceRoutes);
 
 // Common Routes
 app.use('/api/authentication', authenticationRoutes);
@@ -53,7 +57,7 @@ app.use('/api/serviceBooking', serviceBookingRoutes);
 app.use('/api/serviceTracking', serviceTrackingRoutes);
 app.use("/api/estimateApproval", EstimateApprovalRoutes);
 app.use("/api/CustomerProfile", customerProfileRoutes);
-
+	
 // Staff Routes
 app.use('/api/inspectionReport', inspectionReportRoutes);
 app.use('/api/assignedJob', assignedJobRoutes);
