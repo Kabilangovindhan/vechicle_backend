@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-
 const Inspection = require("../../models/inspection");
 const Estimate = require("../../models/estimate");
 
@@ -58,11 +57,13 @@ router.get("/all-reports", async (req, res) => {
 // ============================================
 // ADMIN - UPDATE INSPECTION + ESTIMATE
 // ============================================
+
 router.put("/update/:estimateId", async (req, res) => {
+
     try {
+
         const { estimate, inspection } = req.body;
 
-        // 1. Update Estimate Data
         const updatedEstimate = await Estimate.findByIdAndUpdate(
             req.params.estimateId,
             {
@@ -74,13 +75,9 @@ router.put("/update/:estimateId", async (req, res) => {
             { new: true }
         );
 
-        // 2. Update Inspection Data (Finding by Job ID)
         const updatedInspection = await Inspection.findOneAndUpdate(
             { job: estimate.job._id },
-            {
-                remarks: inspection.remarks,
-                // Add issuesFound here if you want to make those editable too
-            },
+            { remarks: inspection.remarks },
             { new: true }
         );
 
@@ -95,4 +92,5 @@ router.put("/update/:estimateId", async (req, res) => {
         res.status(500).json({ message: "Failed to update record" });
     }
 });
+
 module.exports = router;
