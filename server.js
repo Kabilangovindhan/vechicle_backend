@@ -11,6 +11,7 @@ const jobAssignmentRoutes = require("./routes/admin/jobAssignment");
 const jobControlCenterRoutes = require("./routes/admin/jobControlCenter");
 const inspectionEstimationReportRoutes = require("./routes/admin/inspectionEstimationReport");
 const billingInvoiceRoutes = require("./routes/admin/billingInvoice");
+const adminprofileRoutes =require("./routes/admin/adminProfile");
 
 // Common Routes
 const authenticationRoutes = require("./routes/common/authentication");
@@ -47,6 +48,7 @@ app.use('/api/jobAssignment', jobAssignmentRoutes);
 app.use('/api/jobControlCenter', jobControlCenterRoutes);
 app.use('/api/inspectionestimateReport', inspectionEstimationReportRoutes);
 app.use('/api/billingInvoice', billingInvoiceRoutes);
+app.use('/api/AdminProfile',adminprofileRoutes)
 
 // Common Routes
 app.use('/api/authentication', authenticationRoutes);
