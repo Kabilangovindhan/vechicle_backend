@@ -28,6 +28,7 @@ const inspectionReportRoutes = require("./routes/staff/inspectionReport");
 const assignedJobRoutes = require("./routes/staff/assignedJob");
 const approvalQueueRoutes = require("./routes/staff/approvalQueue");
 const serviceUpdateRoutes = require("./routes/staff/serviceUpdate");
+const staffProfileRoutes =require("./routes/staff/staffProfile");
 
 // ------------------------------------------------------------------------------------------------------------------------
 
@@ -65,6 +66,7 @@ app.use('/api/inspectionReport', inspectionReportRoutes);
 app.use('/api/assignedJob', assignedJobRoutes);
 app.use('/api/approvalQueue', approvalQueueRoutes);
 app.use('/api/serviceUpdate',serviceUpdateRoutes);
+app.use("/api/StaffProfile",staffProfileRoutes)
 
 
 // ------------------------------------------------------------------------------------------------------------------------
