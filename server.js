@@ -48,7 +48,7 @@ app.use('/api/customerManagement', customerManagementRoutes);
 app.use('/api/jobAssignment', jobAssignmentRoutes);
 app.use('/api/jobControlCenter', jobControlCenterRoutes);
 app.use('/api/inspectionestimateReport', inspectionEstimationReportRoutes);
-app.use('/api/billingInvoice', billingInvoiceRoutes);
+app.use('/api/adminBillingInvoice', billingInvoiceRoutes);
 app.use('/api/AdminProfile',adminprofileRoutes)
 
 // Common Routes

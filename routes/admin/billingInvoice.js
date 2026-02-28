@@ -1,56 +1,30 @@
 const express = require("express");
 const router = express.Router();
 
-const User = require("../../models/user");
-const Booking = require("../../models/booking");
 const Job = require("../../models/job");
-const Estimate = require("../../models/estimate");
 
-// GET Ready Delivery Jobs for Customer
-router.get("/fetch/:phone", async (req, res) => {
-    // console.log("hello")
+// ==========================================
+// ADMIN - FETCH APPROVED ESTIMATES FOR BILLING
+// ==========================================
 
+// routes/billing.js (or added to your existing routes)
+
+router.get("/billing-queue", async (req, res) => {
+  
     try {
-
-        const user = await User.findOne({ phone: req.params.phone });
-
-        if (!user)
-            return res.status(404).json({ message: "User not found" });
-
-        const jobs = await Job.find({ jobStatus: "Ready Delivery" })
+        const jobs = await Job.find({ jobStatus: "Pending Billing" })
             .populate({
                 path: "booking",
-                match: { customer: user._id },
-                populate: {
-                    path: "vehicle",
-                    select: "vehicleNumber brand model"
-                }
+                populate: [
+                    { path: "vehicle", select: "vehicleNumber brand model" },
+                    { path: "customer", select: "name phone email" }
+                ]
             })
-            .populate("assignedStaff", "name")
-            .sort({ createdAt: -1 });
-
-        const filtered = jobs.filter(j => j.booking);
-
-        const result = await Promise.all(
-            filtered.map(async (job) => {
-
-                const estimate = await Estimate.findOne({
-                    job: job._id,
-                    approvalStatus: "Approved"
-                });
-
-                return {
-                    job,
-                    estimate
-                };
-            })
-        );
-
-        res.json(result);
-
+            .sort({ updatedAt: 1 }); // Oldest "Ready" jobs first
+        res.json(jobs);
     } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: "Server error" });
+      console.log("print error",err)
+        res.status(500).json({ message: "Error fetching billing data" });
     }
 });
 

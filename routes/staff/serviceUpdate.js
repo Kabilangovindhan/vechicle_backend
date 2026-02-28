@@ -44,13 +44,13 @@ router.get("/jobs", async (req, res) => {
     }
 });
 
+
 // ============================================
 // UPDATE JOB STATUS (Next Step)
 // ============================================
 router.put("/jobs/:id/next", async (req, res) => {
     try {
         const jobId = req.params.id;
-
         const job = await Job.findById(jobId);
 
         if (!job) {
@@ -61,28 +61,31 @@ router.put("/jobs/:id/next", async (req, res) => {
         if (job.jobStatus === "Working") {
             job.jobStatus = "Completed";
             job.endTime = new Date();
-        }
+        } 
         else if (job.jobStatus === "Completed") {
             job.jobStatus = "Ready Delivery";
-        }
+        } 
+        else if (job.jobStatus === "Ready Delivery") {
+            // NEW LOGIC: Move to a final status so it disappears from Service Update 
+            // and appears in the Billing system
+            job.jobStatus = "Pending Billing"; 
+        } 
         else {
             return res.status(400).json({
-                message: "No further status available"
+                message: "No further status available or job already billed"
             });
         }
 
         await job.save();
 
         res.json({
-            message: "Job status updated successfully",
+            message: "Job moved to Billing Queue successfully",
             job
         });
 
     } catch (err) {
         console.log(err);
-        res.status(500).json({
-            message: "Failed to update job status"
-        });
+        res.status(500).json({ message: "Failed to update job status" });
     }
 });
 module.exports = router;
