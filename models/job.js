@@ -6,7 +6,7 @@ const jobSchema = new mongoose.Schema({
     priority: { type: String, enum: ["Normal", "Urgent"], default: "Normal" },
     jobStatus: {
         type: String,
-        enum: ["Assigned", "Inspection", "Waiting Approval", "Working", "Completed", "Ready Delivery", "Pending Billing", "Billed"],
+        enum: ["Assigned", "Inspection", "Waiting Approval", "Working", "Completed", "Ready Delivery","Delivered", "Pending Billing", "Billed"],
         default: "Assigned"
     },
     startTime: Date,
