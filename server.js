@@ -36,6 +36,7 @@ const approvalQueueRoutes = require("./routes/staff/approvalQueue");
 const serviceUpdateRoutes = require("./routes/staff/serviceUpdate");
 const staffProfileRoutes =require("./routes/staff/staffProfile");
 const staffWorkHistoryRoutes = require("./routes/staff/staffWorkHistory");
+const feedbackStaffRoutes = require("./routes/staff/feedback");
 
 // ------------------------------------------------------------------------------------------------------------------------
 
@@ -81,6 +82,7 @@ app.use('/api/approvalQueue', approvalQueueRoutes);
 app.use('/api/serviceUpdate',serviceUpdateRoutes);
 app.use("/api/StaffProfile",staffProfileRoutes)
 app.use("/api/staffWorkHistory",staffWorkHistoryRoutes)
+app.use("/api/feedbackStaff",feedbackStaffRoutes)
 
 // ------------------------------------------------------------------------------------------------------------------------
 
