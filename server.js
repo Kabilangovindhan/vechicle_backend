@@ -14,6 +14,7 @@ const billingInvoiceRoutes = require("./routes/admin/billingInvoice");
 const adminprofileRoutes =require("./routes/admin/adminProfile");
 const paymentVerificationRoutes = require("./routes/admin/paymentVerification");
 const reportAnalyticsRoutes = require("./routes/admin/reportAnalytics");
+const feedbackAdminRoutes = require("./routes/admin/feedback");
 
 // Common Routes
 const authenticationRoutes = require("./routes/common/authentication");
@@ -60,6 +61,7 @@ app.use('/api/adminBillingInvoice', billingInvoiceRoutes);
 app.use('/api/AdminProfile',adminprofileRoutes)
 app.use("/api/paymentVerification",paymentVerificationRoutes)
 app.use("/api/reportAnalytics",reportAnalyticsRoutes)
+app.use("/api/adminfeedback",feedbackAdminRoutes)
 
 // Common Routes
 app.use('/api/authentication', authenticationRoutes);
