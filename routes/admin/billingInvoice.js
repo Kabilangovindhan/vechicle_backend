@@ -4,7 +4,10 @@ const Job = require("../../models/job");
 const Estimate = require("../../models/estimate");
 const Invoice = require("../../models/invoice");
 
+// ------------------------------------------------------------------------------------------------------------------------
+
 // 1. Fetch Queue (Jobs ready for billing)
+
 router.get("/billing-queue", async (req, res) => {
     try {
         const jobs = await Job.find({ jobStatus: "Pending Billing" })
@@ -22,7 +25,10 @@ router.get("/billing-queue", async (req, res) => {
     }
 });
 
+// ------------------------------------------------------------------------------------------------------------------------
+
 // 2. Get specific approved estimate
+
 router.get("/invoice/:jobId", async (req, res) => {
     try {
         const estimate = await Estimate.findOne({
@@ -45,7 +51,10 @@ router.get("/invoice/:jobId", async (req, res) => {
     }
 });
 
+// ------------------------------------------------------------------------------------------------------------------------
+
 // 3. Update estimate charges
+
 router.put("/invoice/update/:estimateId", async (req, res) => {
     try {
         const { items } = req.body;
@@ -69,7 +78,10 @@ router.put("/invoice/update/:estimateId", async (req, res) => {
     }
 });
 
+// ------------------------------------------------------------------------------------------------------------------------
+
 // 4. Confirm Bill (Saves to DB as Pending)
+
 router.post("/confirm-bill", async (req, res) => {
     try {
         const { jobId, estimateId, tax, grandTotal } = req.body;
@@ -79,17 +91,16 @@ router.post("/confirm-bill", async (req, res) => {
             estimate: estimateId,
             gst: tax,
             grandTotal: grandTotal,
-            paymentStatus: "Pending" // Set to pending until customer pays
+            paymentStatus: "Pending" 
         });
         await newInvoice.save();
-
-        // Update Job to "Billed" status
         await Job.findByIdAndUpdate(jobId, { jobStatus: "Billed" });
-
         res.status(201).json({ success: true, message: "Invoice created" });
     } catch (err) {
         res.status(500).json({ message: "Failed to finalize billing" });
     }
 });
+
+// ------------------------------------------------------------------------------------------------------------------------
 
 module.exports = router;

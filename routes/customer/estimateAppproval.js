@@ -20,7 +20,6 @@ router.get("/estimate/:phone", async (req, res) => {
             });
         }
 
-        // find estimates belonging to customer
         const estimates = await Estimate.find()
             .populate({
                 path: "job",
@@ -41,12 +40,10 @@ router.get("/estimate/:phone", async (req, res) => {
             })
             .sort({ createdAt: -1 });
 
-        // remove unrelated estimates
         const filtered = estimates.filter(
             (est) => est.job && est.job.booking
         );
 
-        // attach inspection data
         const result = await Promise.all(
             filtered.map(async (est) => {
                 const inspection = await Inspection.findOne({

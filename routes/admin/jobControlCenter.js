@@ -2,8 +2,12 @@ const express = require("express");
 const router = express.Router();
 const JobModel = require("../../models/job");
 
+// ------------------------------------------------------------------------------------------------------------------------
+
 // GET all jobs for Job Control Center
+
 router.get("/fetch", async (req, res) => {
+
     try {
 
         const jobs = await JobModel.find()
@@ -35,5 +39,7 @@ router.get("/fetch", async (req, res) => {
 
     }
 });
+
+// ------------------------------------------------------------------------------------------------------------------------
 
 module.exports = router;
