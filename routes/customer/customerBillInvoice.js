@@ -9,12 +9,12 @@ const User = require("../../models/user");
 // ======================================
 // GET CUSTOMER INVOICES USING PHONE
 // ======================================
+
 router.get("/invoices/:phone", async (req, res) => {
+
     try {
 
         const phone = req.params.phone;
-
-        console.log("Received phone:", phone);
 
         // 1️⃣ Find customer using phone
         const customer = await User.findOne({ phone });
