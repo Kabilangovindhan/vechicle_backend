@@ -13,9 +13,11 @@ const inspectionEstimationReportRoutes = require("./routes/admin/inspectionEstim
 const billingInvoiceRoutes = require("./routes/admin/billingInvoice");
 const adminprofileRoutes =require("./routes/admin/adminProfile");
 const paymentVerificationRoutes = require("./routes/admin/paymentVerification");
+const reportAnalyticsRoutes = require("./routes/admin/reportAnalytics");
 
 // Common Routes
 const authenticationRoutes = require("./routes/common/authentication");
+const dashboardRoutes = require("./routes/common/dashboard");
 
 // Customer Routes
 const myVehicleRoutes = require("./routes/customer/myVehicle");
@@ -24,6 +26,7 @@ const serviceBookingRoutes = require("./routes/customer/serviceBooking");
 const EstimateApprovalRoutes = require("./routes/customer/estimateAppproval");
 const customerProfileRoutes = require("./routes/customer/customerProfile");
 const customerBillInvoiceRoutes = require("./routes/customer/customerBillInvoice");
+const serviceHistoryRoutes = require("./routes/customer/serviceHistory");
 
 // Staff Routes
 const inspectionReportRoutes = require("./routes/staff/inspectionReport");
@@ -54,9 +57,11 @@ app.use('/api/inspectionestimateReport', inspectionEstimationReportRoutes);
 app.use('/api/adminBillingInvoice', billingInvoiceRoutes);
 app.use('/api/AdminProfile',adminprofileRoutes)
 app.use("/api/paymentVerification",paymentVerificationRoutes)
+app.use("/api/reportAnalytics",reportAnalyticsRoutes)
 
 // Common Routes
 app.use('/api/authentication', authenticationRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Customer Routes
 app.use('/api/myVehicle', myVehicleRoutes);
@@ -65,6 +70,7 @@ app.use('/api/serviceTracking', serviceTrackingRoutes);
 app.use("/api/estimateApproval", EstimateApprovalRoutes);
 app.use("/api/CustomerProfile", customerProfileRoutes);
 app.use("/api/customerInvoice", customerBillInvoiceRoutes);
+app.use("/api/serviceHistory", serviceHistoryRoutes);
 	
 // Staff Routes
 app.use('/api/inspectionReport', inspectionReportRoutes);
