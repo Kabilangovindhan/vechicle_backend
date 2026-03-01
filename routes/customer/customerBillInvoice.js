@@ -53,4 +53,68 @@ router.get("/invoices/:phone", async (req, res) => {
     }
 });
 
+// ======================================
+// PROCESS PAYMENT FOR INVOICE
+// ======================================
+
+router.post("/pay/:invoiceId", async (req, res) => {
+    try {
+        const { invoiceId } = req.params;
+        const { paymentMethod, paymentDetails } = req.body;
+
+        // Find the invoice
+        const invoice = await Invoice.findById(invoiceId);
+        
+        if (!invoice) {
+            return res.status(404).json({ message: "Invoice not found" });
+        }
+
+        if (invoice.paymentStatus === "Paid") {
+            return res.status(400).json({ message: "Invoice already paid" });
+        }
+
+        // Update invoice with payment details
+        invoice.paymentStatus = "Paid";
+        invoice.paymentMethod = paymentMethod; // Now receives "Cash", "UPI", or "Card"
+        
+        // Store minimal payment details if needed (for audit)
+        if (paymentMethod === 'UPI' && paymentDetails?.upiId) {
+            invoice.paymentReference = paymentDetails.upiId;
+        } else if (paymentMethod === 'Card' && paymentDetails?.cardNumber) {
+            invoice.paymentReference = `Card ending in ${paymentDetails.cardNumber}`;
+        }
+
+        await invoice.save();
+
+        // Optionally update the associated job status
+        if (invoice.job) {
+            await Job.findByIdAndUpdate(invoice.job, {
+                paymentStatus: "Paid"
+            });
+        }
+
+        // Return updated invoice with populated data
+        const updatedInvoice = await Invoice.findById(invoiceId)
+            .populate({
+                path: "job",
+                populate: {
+                    path: "booking",
+                    populate: {
+                        path: "vehicle",
+                        select: "vehicleNumber brand model"
+                    }
+                }
+            });
+
+        res.json({ 
+            message: "Payment successful", 
+            invoice: updatedInvoice 
+        });
+
+    } catch (err) {
+        console.log("Error processing payment:", err);
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+
 module.exports = router;

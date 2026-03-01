@@ -12,7 +12,9 @@ const invoiceSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ["Cash", "Card", "UPI"]
+        enum: ["Cash", "Card", "UPI"],
+        default: null
+         
     }
 }, { timestamps: true });
 
