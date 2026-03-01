@@ -70,7 +70,6 @@ app.use('/api/approvalQueue', approvalQueueRoutes);
 app.use('/api/serviceUpdate',serviceUpdateRoutes);
 app.use("/api/StaffProfile",staffProfileRoutes)
 
-
 // ------------------------------------------------------------------------------------------------------------------------
 
 const PORT = process.env.PORT || 5000;
